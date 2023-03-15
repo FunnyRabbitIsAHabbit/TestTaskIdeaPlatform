@@ -18,8 +18,8 @@ public class Main {
         Map<Object, Object> toFindFromTLV = Map.of(
                 "origin", "TLV",
                 "destination", "VVO");
-        List<Object> toAppendToResult = List.of("departure_date", "departure_time",
-                "arrival_date", "arrival_time");
+        List<List<Object>> toAppendToResult = List.of(List.of("departure_date", "departure_time"),
+                List.of("arrival_date", "arrival_time"));
 
         Set<Map<Object, Object>> searchList = Set.of(toFindFromVVO, toFindFromTLV);
         List<Object> myResultJSON = new ArrayList<>();
@@ -31,10 +31,13 @@ public class Main {
 
         myResultJSON.forEach(
                 obj -> {
-                    List<Object> datesTimes = (ArrayList) obj;
+                    List<Map<String, String>> datesTimes = (ArrayList) obj;
                     if (!datesTimes.isEmpty()) {
-                        ProcessCleanData result = new ProcessCleanData(datesTimes);
-                        Collection<Object> cleanResult= result.getResultData();
+
+                        ProcessCleanData result = new ProcessCleanData(datesTimes,
+                                List.of("departure", "arrival"));
+
+                        List<Map<String, String>> cleanResult= result.getResultData();
                         System.out.println(cleanResult);
                     }
                 }

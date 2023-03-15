@@ -3,10 +3,7 @@ package application;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class ProcessJSON {
 
@@ -17,7 +14,7 @@ public class ProcessJSON {
     public ProcessJSON(JSONObject jo,
                        Object toFindArrayBy,
                        Map<Object, Object> toRetrieveBy,
-                       List<Object> toRetrieveFrom) {
+                       List<List<Object>> toRetrieveFrom) {
 
         this.outJSON = new ArrayList<>();
         this.processJSON(jo, toFindArrayBy, toRetrieveBy, toRetrieveFrom);
@@ -35,7 +32,7 @@ public class ProcessJSON {
 
     public final void collectNeededFromThisJSONArray(Object key,
                                                      Object value,
-                                                     List<Object> toFindKeys) {
+                                                     List<List<Object>> toFindKeys) {
 
         for (Object item : this.selectedJSON) {
             JSONObject actualItem = (JSONObject) item;
@@ -43,7 +40,13 @@ public class ProcessJSON {
             if (this.isMyKeyValue(actualItem, key, value)) {
 
                 toFindKeys.forEach(
-                        findKey -> this.outJSON.add(Map.of(findKey, actualItem.get(findKey)))
+                        findKey -> {
+                            Map<Object, Object> myMap = new HashMap<>();
+                            findKey.forEach(
+                                    microKey -> myMap.put(microKey, actualItem.get(microKey))
+                            );
+                            this.outJSON.add(myMap);
+                        }
                 );
             }
         }
@@ -54,7 +57,7 @@ public class ProcessJSON {
     public void processJSON(JSONObject jo,
                             Object toFindArrayBy,
                             Map<Object, Object> toRetrieveBy,
-                            List<Object> toRetrieveFrom) {
+                            List<List<Object>> toRetrieveFrom) {
 
         this.selectedJSON = (JSONArray) jo.get(toFindArrayBy);
         if (!toRetrieveBy.isEmpty()) {
