@@ -1,7 +1,9 @@
 package application;
 
 import org.apache.commons.io.input.BOMInputStream;
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,8 +14,9 @@ public class ReadJSON {
 
     private File jsonFile;
     private JSONObject json;
+    private final JSONParser jsonParser = new JSONParser();
 
-    // constructor, no default value
+    // constructor, no default value, call to business function
     public ReadJSON(String filename) {
         this.retrieveFile(filename);
         this.retrieveJson(this.jsonFile);
@@ -39,11 +42,9 @@ public class ReadJSON {
             s = s.replaceAll("\n", "");
             s = s.replaceAll(" ", "");
 
-            this.json = new JSONObject(s);
+            this.json = (JSONObject) this.jsonParser.parse(s);
 
-
-
-        } catch (IOException error) {
+        } catch (IOException | ParseException error) {
             this.json = new JSONObject();
         }
     }
