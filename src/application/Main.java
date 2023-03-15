@@ -2,10 +2,7 @@ package application;
 
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 
 public class Main {
@@ -36,7 +33,9 @@ public class Main {
                 obj -> {
                     List<Object> datesTimes = (ArrayList) obj;
                     if (!datesTimes.isEmpty()) {
-                        System.out.println(datesTimes);
+                        ProcessCleanData result = new ProcessCleanData(datesTimes);
+                        Collection<Object> cleanResult= result.getResultData();
+                        System.out.println(cleanResult);
                     }
                 }
         );
