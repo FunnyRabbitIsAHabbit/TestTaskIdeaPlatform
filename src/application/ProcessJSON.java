@@ -2,19 +2,19 @@ package application;
 
 import org.json.JSONObject;
 
-import java.util.List;
+import java.util.Map;
 
 public class ProcessJSON {
 
     private JSONObject processedJSON;
 
     // constructor, no default values
-    public ProcessJSON(JSONObject jo, List<String> toRetrieve) {
+    public ProcessJSON(JSONObject jo, Map<String, String> toRetrieve) {
 
         this.processJSON(jo, toRetrieve);
     }
 
-    public final void processJSON(JSONObject jo, List<String> toRetrieve) {
+    public final void processJSON(JSONObject jo, Map<String, String> toRetrieve) {
         if (toRetrieve.isEmpty()) {
             this.processedJSON = jo;
         }
