@@ -18,8 +18,8 @@ public class Main {
         Map<Object, Object> toFindFromTLV = Map.of(
                 "origin", "TLV",
                 "destination", "VVO");
-        List<List<Object>> toAppendToResult = List.of(List.of("departure_date", "departure_time"),
-                List.of("arrival_date", "arrival_time"));
+        List<List<Object>> toAppendToResult = List.of(List.of("departure_date", "departure_time",
+                "arrival_date", "arrival_time"));
 
         Set<Map<Object, Object>> searchList = Set.of(toFindFromVVO, toFindFromTLV);
         List<Object> myResultJSON = new ArrayList<>();
@@ -34,11 +34,14 @@ public class Main {
                     List<Map<String, String>> datesTimes = (ArrayList) obj;
                     if (!datesTimes.isEmpty()) {
 
+                        List<Object> patterns = toAppendToResult.get(0);
                         ProcessCleanData result = new ProcessCleanData(datesTimes,
-                                List.of("departure", "arrival"));
+                                patterns);
 
-                        List<Map<String, String>> cleanResult= result.getResultData();
-                        System.out.println(cleanResult);
+                        List<Long> cleanResult = result.getResultData();
+                        ProcessMetrics answerX = new ProcessMetrics(cleanResult);
+                        System.out.println(answerX.getAverage());
+                        System.out.println(answerX.getPercentile(90));
                     }
                 }
         );
