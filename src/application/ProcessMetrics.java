@@ -1,6 +1,6 @@
 package application;
 
-import org.apache.commons.math3.stat.descriptive.rank.Percentile;
+import org.apache.commons.math3.stat.StatUtils;
 import java.util.List;
 
 public class ProcessMetrics {
@@ -12,17 +12,15 @@ public class ProcessMetrics {
         this.data = data;
     }
 
-    public Long getAverage() {
-        Integer count = this.data.size();
-        Long total = this.data.stream().reduce(0l, Long::sum);
+    public double getAverage() {
+        double[] dat = this.data.stream().mapToDouble(i -> i).toArray();
 
-        // Rounded result
-        return total / count;
+        return StatUtils.mean(dat);
     }
 
-    public Double getPercentile(int quantile) {
-        Percentile x = new Percentile(quantile);
+    public double getPercentile(int quantile) {
+        double[] dat = this.data.stream().mapToDouble(i -> i).toArray();
 
-        return x.evaluate(this.data.stream().mapToDouble(i -> i).toArray());
+        return StatUtils.percentile(dat, quantile);
     }
 }
