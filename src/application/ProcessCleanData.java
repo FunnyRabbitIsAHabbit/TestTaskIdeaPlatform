@@ -15,7 +15,9 @@ public class ProcessCleanData {
 
     // constructor, no default values, call to business function
     public ProcessCleanData(List<Map<String, String>> data,
-                            List<?> patterns) {
+                            List<?> patterns,
+                            List<String> labels1,
+                            List<String> labels2) {
         this.data = data;
         this.resultData = new ArrayList<>();
         this.patterns = patterns;
@@ -23,7 +25,7 @@ public class ProcessCleanData {
         // Set time to Greenwich
         this.formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-        this.main(List.of("arrival", "departure"));
+        this.main(labels1, labels2);
     }
 
     public List<Map<String, String>> getData() {
@@ -34,7 +36,8 @@ public class ProcessCleanData {
         return resultData;
     }
 
-    private Map<String, Date> convertKeysToDatetime(Map<String, String> x) {
+    private Map<String, Date> convertKeysToDatetime(Map<String, String> x,
+                                                    List<String> labels) {
 
         Map<String, String> toConvert = new HashMap<>();
         Map<String, Date> toReturn = new HashMap<>();
@@ -45,7 +48,7 @@ public class ProcessCleanData {
             x.forEach(
                     (key, value) -> {
                         if (Objects.equals(pat, key)) {
-                            if (pat.contains("date")) {
+                            if (pat.contains(labels.get(0))) {
                                 toConvert.put(pat.split("_")[0], value);
                             }
                         }
@@ -55,7 +58,7 @@ public class ProcessCleanData {
             x.forEach(
                     (key, value) -> {
                         if (Objects.equals(pat, key)) {
-                            if (pat.contains("time")) {
+                            if (pat.contains(labels.get(1))) {
                                 toConvert.replace(
                                         pat.split("_")[0],
                                         toConvert.get(pat.split("_")[0]) + " " + value);
@@ -79,14 +82,14 @@ public class ProcessCleanData {
         return toReturn;
     }
 
-    private void main(List<String> label) {
+    private void main(List<String> labels1, List<String> labels2) {
 
         this.data.forEach(
                 item -> {
                     // 1
-                    Map<String, Date> out = this.convertKeysToDatetime(item);
-                    Long difference = out.get(label.get(0)).getTime() -
-                            out.get(label.get(1)).getTime();
+                    Map<String, Date> out = this.convertKeysToDatetime(item, labels2);
+                    Long difference = out.get(labels1.get(0)).getTime() -
+                            out.get(labels1.get(1)).getTime();
                     this.resultData.add(difference);
 
                     // 3

@@ -19,13 +19,13 @@ public class Main {
                 "origin", "TLV",
                 "destination", "VVO");
         List<List<Object>> toAppendToResult = List.of(List.of("departure_date", "departure_time",
-                "arrival_date", "arrival_time"));
+                "arrival_date", "arrival_time", "origin", "destination"));
 
         Set<Map<Object, Object>> searchList = Set.of(toFindFromVVO, toFindFromTLV);
         List<Object> myResultJSON = new ArrayList<>();
 
         for (Map<Object, Object> toFind : searchList) {
-            ProcessJSON processJSON = new ProcessJSON(myJSON,toFindArrayBy, toFind, toAppendToResult);
+            ProcessJSON processJSON = new ProcessJSON(myJSON, toFindArrayBy, toFind, toAppendToResult);
             myResultJSON.add(processJSON.getOutJSON());
         }
 
@@ -36,7 +36,9 @@ public class Main {
 
                         List<Object> patterns = toAppendToResult.get(0);
                         ProcessCleanData result = new ProcessCleanData(datesTimes,
-                                patterns);
+                                patterns,
+                                List.of("arrival", "departure"),
+                                List.of("date", "time"));
 
                         List<Long> cleanResult = result.getResultData();
                         ProcessMetrics answerX = new ProcessMetrics(cleanResult);
