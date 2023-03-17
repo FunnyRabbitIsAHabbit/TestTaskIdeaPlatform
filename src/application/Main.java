@@ -35,42 +35,53 @@ public class Main {
                     if (!datesTimes.isEmpty()) {
 
                         List<Object> patterns = toAppendToResult.get(0);
+                        Map<String, String> timeZones = Map.of(
+                                "VVO", "Asia/Vladivostok",
+                                "TLV", "Israel"
+                        );
                         ProcessCleanData result = new ProcessCleanData(datesTimes,
                                 patterns,
                                 List.of("arrival", "departure"),
-                                List.of("date", "time"));
+                                List.of("date", "time"),
+                                List.of("destination", "origin"),
+                                timeZones);
 
                         List<Long> cleanResult = result.getResultData();
                         ProcessMetrics answerX = new ProcessMetrics(cleanResult);
-                        double resultMean = answerX.getAverage();
-                        double result90 = answerX.getPercentile(90);
 
-                        int hourDiv = 1000 * 60 * 60;
-                        int minuteDiv = 1000 * 60;
-                        int secondDiv = 1000;
-
-                        List<Integer> dateResult = List.of(
-                                (int) (resultMean / hourDiv) % 24,
-                                (int) (resultMean / minuteDiv) % 60,
-                                (int) (resultMean / secondDiv) % 60,
-
-                                (int) (result90 / hourDiv) % 24,
-                                (int) (result90 / minuteDiv) % 60,
-                                (int) (result90 / secondDiv) % 60
-                        );
+                        Map<String, Integer> resultMean = convertMilliseconds(answerX.getAverage());
+                        Map<String, Integer> result90 = convertMilliseconds(answerX.getPercentile(90));
 
                         System.out.println(
                                 "Mean time Tel-Aviv – Vladivostok: " +
-                                        dateResult.get(0) + " hours, " +
-                                        dateResult.get(1) + " minutes, " +
-                                        dateResult.get(2) + " seconds;\n" +
-                                        "90th prc. time Tel-Aviv – Vladivostok: " +
-                                        dateResult.get(3) + " hours, " +
-                                        dateResult.get(4) + " minutes, " +
-                                        dateResult.get(5) + " seconds."
+                                        "\nHours: " + resultMean.get("Hours") +
+                                        "\nMinutes: " + resultMean.get("Minutes") +
+                                        "\nSeconds: " + resultMean.get("Seconds") +
+                                        "\n-------------\n90th prc. time Tel-Aviv – Vladivostok: " +
+                                        "\nHours: " + result90.get("Hours") +
+                                        "\nMinutes: " + result90.get("Minutes") +
+                                        "\nSeconds: " + result90.get("Seconds")
                         );
                     }
                 }
+        );
+    }
+
+    public static Map<String, Integer> convertMilliseconds(double milliseconds) {
+        int hourDiv = 1000 * 60 * 60;
+        int dayDiv = hourDiv * 24;
+        int minuteDiv = 1000 * 60;
+        int secondDiv = 1000;
+
+        int days = (int) (milliseconds / dayDiv);
+        int hours = (int) (milliseconds / hourDiv) % 24 + 24 * days;
+        int minutes = (int) (milliseconds / minuteDiv) % 60;
+        int seconds = (int) (milliseconds / secondDiv) % 60;
+
+        return Map.of(
+                "Hours", hours,
+                "Minutes", minutes,
+                "Seconds", seconds
         );
     }
 
